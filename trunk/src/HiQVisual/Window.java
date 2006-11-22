@@ -25,12 +25,7 @@ public class Window extends javax.swing.JFrame {
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("Hi-Q!");
-    addMouseListener(new java.awt.event.MouseAdapter() {
-      public void mouseClicked(java.awt.event.MouseEvent evt) {
-        formMouseClicked(evt);
-      }
-    });
-
+    setResizable(false);
     gamePanel.setBackground(new java.awt.Color(0, 0, 0));
     gamePanel.setPreferredSize(new java.awt.Dimension(300, 300));
     gamePanel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -144,11 +139,7 @@ public class Window extends javax.swing.JFrame {
       clearButton.setEnabled(true);
     }
   }//GEN-LAST:event_stepButtonMouseClicked
-  
-  private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
     
-  }//GEN-LAST:event_formMouseClicked
-  
   private void startButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_startButtonMouseClicked
     if(startButton.isEnabled()){
       startButton.setEnabled(false);
