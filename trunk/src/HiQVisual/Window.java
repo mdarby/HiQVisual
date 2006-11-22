@@ -1,9 +1,3 @@
-/*
- * Window.java
- *
- * Created on November 21, 2006, 5:41 PM
- */
-
 package HiQVisual;
 
 import java.awt.Color;
@@ -13,10 +7,6 @@ import java.awt.Point;
 import java.util.Iterator;
 import java.util.Vector;
 
-/**
- *
- * @author  mdarby
- */
 public class Window extends javax.swing.JFrame {
   public Window() {
     initComponents();
@@ -27,7 +17,7 @@ public class Window extends javax.swing.JFrame {
   
   // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
   private void initComponents() {
-    panel = new gamePanel();
+    gamePanel = new javax.swing.JPanel();
     startButton = new javax.swing.JButton();
     stopButton = new javax.swing.JButton();
     stepButton = new javax.swing.JButton();
@@ -41,21 +31,22 @@ public class Window extends javax.swing.JFrame {
       }
     });
 
-    panel.setPreferredSize(new java.awt.Dimension(300, 300));
-    panel.addMouseListener(new java.awt.event.MouseAdapter() {
+    gamePanel.setBackground(new java.awt.Color(0, 0, 0));
+    gamePanel.setPreferredSize(new java.awt.Dimension(300, 300));
+    gamePanel.addMouseListener(new java.awt.event.MouseAdapter() {
       public void mouseClicked(java.awt.event.MouseEvent evt) {
-        panelMouseClicked(evt);
+        gamePanelMouseClicked(evt);
       }
     });
 
-    org.jdesktop.layout.GroupLayout panelLayout = new org.jdesktop.layout.GroupLayout(panel);
-    panel.setLayout(panelLayout);
-    panelLayout.setHorizontalGroup(
-      panelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+    org.jdesktop.layout.GroupLayout gamePanelLayout = new org.jdesktop.layout.GroupLayout(gamePanel);
+    gamePanel.setLayout(gamePanelLayout);
+    gamePanelLayout.setHorizontalGroup(
+      gamePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
       .add(0, 300, Short.MAX_VALUE)
     );
-    panelLayout.setVerticalGroup(
-      panelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+    gamePanelLayout.setVerticalGroup(
+      gamePanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
       .add(0, 300, Short.MAX_VALUE)
     );
 
@@ -94,7 +85,7 @@ public class Window extends javax.swing.JFrame {
       .add(layout.createSequentialGroup()
         .addContainerGap()
         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-          .add(panel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+          .add(gamePanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
           .add(layout.createSequentialGroup()
             .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
               .add(stepButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -109,7 +100,7 @@ public class Window extends javax.swing.JFrame {
       layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
       .add(layout.createSequentialGroup()
         .addContainerGap()
-        .add(panel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+        .add(gamePanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
         .add(23, 23, 23)
         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
           .add(startButton)
@@ -138,9 +129,9 @@ public class Window extends javax.swing.JFrame {
       stopButton.setEnabled(false);
       stepButton.setEnabled(true);
       
-      Graphics g = panel.getGraphics();
+      Graphics g = gamePanel.getGraphics();
       g.setColor(Color.BLACK);
-      g.fillRect(0,0,panel.getWidth(),panel.getHeight());
+      g.fillRect(0,0,gamePanel.getWidth(),gamePanel.getHeight());
       list.clear();
     }
   }//GEN-LAST:event_clearButtonMouseClicked
@@ -164,26 +155,34 @@ public class Window extends javax.swing.JFrame {
       stopButton.setEnabled(true);
       stepButton.setEnabled(false);
       clearButton.setEnabled(true);
+      HiQ hiq = new HiQ();
+      hiq.startGame();
     }
   }//GEN-LAST:event_startButtonMouseClicked
   
-  private void panelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panelMouseClicked
-    Graphics2D g = (Graphics2D) panel.getGraphics();
+  private void drawBoard(){
+    Graphics2D g = (Graphics2D) gamePanel.getGraphics();
+    g.setColor(Color.RED);
+    g.fillRect(0,0,30,30);
+  }
+  
+  private void gamePanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_gamePanelMouseClicked
+    Graphics2D g = (Graphics2D) gamePanel.getGraphics();
     
-    g.setColor(Color.WHITE);
     list.add(evt.getPoint());
     
     for(i = list.iterator(); i.hasNext(); ) {
       Point nextPoint = (Point)i.next();
       Point lastPoint = list.get(list.size()-1);
-      g.drawOval(nextPoint.x-5, nextPoint.y-5, 10, 10);
+      
+      g.setColor(Color.RED);
+      g.drawOval(nextPoint.x-3, nextPoint.y-3, 6, 6);
+      
+      g.setColor(Color.WHITE);
       g.drawLine(lastPoint.x, lastPoint.y, nextPoint.x, nextPoint.y);
     }
-  }//GEN-LAST:event_panelMouseClicked
+  }//GEN-LAST:event_gamePanelMouseClicked
   
-  /**
-   * @param args the command line arguments
-   */
   public static void main(String args[]) {
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
@@ -194,7 +193,7 @@ public class Window extends javax.swing.JFrame {
   
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton clearButton;
-  private javax.swing.JPanel panel;
+  public static javax.swing.JPanel gamePanel;
   private javax.swing.JButton startButton;
   private javax.swing.JButton stepButton;
   private javax.swing.JButton stopButton;
