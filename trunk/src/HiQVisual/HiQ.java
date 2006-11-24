@@ -20,17 +20,14 @@
 
 package HiQVisual;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.awt.Point;
 import java.util.Vector;
 
 public class HiQ implements GameConstants {
+  public static Vector <Board>boardStack = new Vector();
   private Vector visitStack = new Vector();
   private Vector direction = new Vector();
-  
+  public static boolean gameOver = false;
 
 /**************************************************************************
 **
@@ -70,19 +67,15 @@ public class HiQ implements GameConstants {
 **
 **************************************************************************/  
   private boolean gameFinished(Board board){
-    if(board.isPeg(new Position(3,3))){
-      String str = board.toString();
-      int pegCount =0;
-
-      for(int i=0; i<str.length(); i++){
-	if(str.charAt(i) == PEG){
-	  pegCount++;
-	}
-      }
-      
-      return pegCount == 1 ? true : false;
+    Point centerPos = new Point(3,3);
+    
+    if(board.isPeg(centerPos) && board.pegCount() == 1){
+      gameOver = true;
+      return true;
     }
-    return false;
+    else{
+      return false;
+    }
   }
  
 /**************************************************************************
@@ -100,31 +93,44 @@ public class HiQ implements GameConstants {
 **    None
 **
 **************************************************************************/  
-  private void run(Board board){
+  private void run(){   
     
-    visitStack.add(board.toString()); //mark source board as visited
-    
-    for(int j=0; j<MAX_COLS; j++){
-      for(int k=0; k<MAX_ROWS; k++){
-	for(int x=0; x<direction.size(); x++){
-	  Position curr_pos = new Position(j,k);
-	  String curr_dir = (String)direction.elementAt(x);
-	  
-	  if(board.isJumpValid(curr_pos,curr_dir)){
-	    board.jump(curr_pos,curr_dir); //update board with this possible move
-	    
-	    String possible_board = board.toString();
-	      
-	    if(notVisited(possible_board)){
+    while(!gameOver && !boardStack.isEmpty()){
+      Board board = boardStack.lastElement();
+      boardStack.removeElementAt(boardStack.size()-1);
+
+      visitStack.add(board.toString()); //mark source board as visited
+
+      board.show();
+      
+      try {
+	Thread.currentThread().sleep(PAUSE);
+      } catch (InterruptedException ex) {
+	ex.printStackTrace();
+      }
+      
+      for(int j=0; j<MATRIXSIZE; j++){
+	for(int k=0; k<MATRIXSIZE; k++){
+	  for(int x=0; x<direction.size(); x++){
+
+	    Point currPos = new Point(j,k);
+	    String currDir = (String)direction.elementAt(x);
+
+	    if(board.isJumpValid(currPos,currDir)){
+	      board.jump(currPos,currDir); //update board with this possible move
+
 	      if(gameFinished(board)){
 		board.show();
-		System.exit(0);
-	      } else{
-		run(new Board(possible_board, board.getList()));
+	      }
+	      else{
+		String possBoard = board.toString();
+
+		if(notVisited(possBoard)){
+		  boardStack.add(new Board(possBoard, board.getList()));
+		  board.goBack(currPos,currDir);
+		}
 	      }
 	    }
-	    
-	    board.goBack(curr_pos,curr_dir);
 	  }
 	}
       }
@@ -154,7 +160,7 @@ public class HiQ implements GameConstants {
 **
 ** Name: startGame()
 **
-** Description: Starts the main algorithm containing the game logic
+** Description: Starts the main algorithm containing the default game logic
 **
 ** Parameters
 **
@@ -166,62 +172,6 @@ public class HiQ implements GameConstants {
 **
 **************************************************************************/  
   public void startGame(){
-    run(new Board());
-  }
-  
-/**************************************************************************
-**
-** Name: startGame(Board)
-**
-** Description: Starts the main algorithm containing the game logic with an 
-**              existing board configuration
-**
-** Parameters
-**
-** INPUT:
-**    None
-**
-** OUTPUT:
-**    None
-**
-**************************************************************************/  
-  public void startGame(Board b){
-    run(b);
-  }  
-
-/**************************************************************************
-**
-** Name: Main()
-**
-** Description: Starts the HiQ game
-**
-** Parameters
-**
-** INPUT:
-**    args * Any command line parameters (not used)
-**
-** OUTPUT:
-**    None
-**
-**************************************************************************/  
-  public static void main(String[] args) {
-    HiQ hiq = new HiQ();
-    
-    if(args.length > 0){
-      BufferedReader in;
-      try {
-        in = new BufferedReader(new InputStreamReader(new FileInputStream(args[0]), "UTF8"));
-        hiq.startGame(new Board(in));
-      } catch (UnsupportedEncodingException ex) {
-        ex.printStackTrace();
-      } catch (FileNotFoundException ex) {
-        System.out.println(args[0] + " does not exist!");
-        System.exit(1);
-      }
-    }
-    else{
-      hiq.startGame();
-    }
-    System.out.println("The board is not solveable from this starting point!");
+    run();
   }
 }

@@ -20,14 +20,14 @@
 
 package HiQVisual;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Vector;
 
 public class Board implements GameConstants {
-  private char board[][] = new char[MAX_COLS][MAX_ROWS];
+  private char board[][] = new char[MATRIXSIZE][MATRIXSIZE];
   private Vector jumpList = new Vector();
   private static int time = 0;
  
@@ -35,23 +35,67 @@ public class Board implements GameConstants {
 **
 ** Name: Board()
 **
-** Description: Board constuctor
+** Description: Board Constructor
 **
 ** Parameters
 **
 ** INPUT:
-**    string * A string representation of a Board instance
-**    list * A vector of previous board movements
+**    None
 **
 ** OUTPUT:
-**    New Board instance
+**    New Board instance with no pegs
 **
-**************************************************************************/ 
+**************************************************************************/    
+  public Board(){
+    //Initialize entire board at 1
+    for(int i=0; i<MATRIXSIZE; i++){
+      for(int k=0; k<MATRIXSIZE; k++){
+	board[i][k] = HOLE;
+      }
+    }
+    
+    //Mark top left and right quads as invalid
+    for(int x=0; x<2; x++){
+      for(int y=0; y<2; y++){
+	board[x][y] = INVALID;
+      }
+      for(int y=MATRIXSIZE-2; y<MATRIXSIZE; y++){
+	board[x][y] = INVALID;
+      }
+    }
+    
+    //Mark bottom left and right quads as invalid
+    for(int x=MATRIXSIZE-2; x<MATRIXSIZE; x++){
+      for(int y=MATRIXSIZE-2; y<MATRIXSIZE; y++){
+	board[x][y] = INVALID;
+      }
+      for(int y=0; y<2; y++){
+	board[x][y] = INVALID;
+      }
+    }   
+  }  
+  
+/**************************************************************************
+**
+** Name: Board()
+**
+** Description: Board Constructor
+**
+** Parameters
+**
+** INPUT:
+**    String string * String version of a Board
+**    Vector list * List of previous moves that are associated with the Board
+**
+** OUTPUT:
+**    New Board instance with no pegs
+**
+**************************************************************************/  
   public Board(String string, Vector list){
     int i,j,k;
     
     for(i=0,j=0,k=0; i<string.length(); i++, k++){
-      if(i%(MAX_COLS) == 0 && i > 0){
+      if(i%(MATRIXSIZE) == 0 && i > 0){
 	j++;
 	k=0;
       }
@@ -63,7 +107,6 @@ public class Board implements GameConstants {
     
     ++time;
   }
-
   
 /**************************************************************************
 **
@@ -82,10 +125,10 @@ public class Board implements GameConstants {
 **************************************************************************/   
   public Board(BufferedReader inFile){
     try {
-      for(int i=0; i<MAX_COLS; i++){
+      for(int i=0; i<MATRIXSIZE; i++){
         char[] currline = inFile.readLine().toCharArray();
         
-        for(int k=0; k<MAX_ROWS; k++){
+        for(int k=0; k<MATRIXSIZE; k++){
           board[i][k] = currline[k];
         }
       }
@@ -99,9 +142,9 @@ public class Board implements GameConstants {
   
 /**************************************************************************
 **
-** Name: Board()
+** Name: clear()
 **
-** Description: Board Constructor
+** Description: Removes all pegs from a board
 **
 ** Parameters
 **
@@ -109,43 +152,19 @@ public class Board implements GameConstants {
 **    None
 **
 ** OUTPUT:
-**    New Board instance with default values
+**    None
 **
-**************************************************************************/  
-  public Board(){
-    //Initialize entire board at 1
-    for(int i=0; i<MAX_COLS; i++){
-      for(int k=0; k<MAX_ROWS; k++){
-	board[i][k] = PEG;
+**************************************************************************/    
+  public void clear(){
+    for(int i=0; i<MATRIXSIZE; i++){
+      for(int k=0; k<MATRIXSIZE; k++){
+	if(board[i][k] != INVALID){
+	  board[i][k] = HOLE;
+	}
       }
-    }
-    
-    //Mark top left and right quads as invalid
-    for(int x=0; x<2; x++){
-      for(int y=0; y<2; y++){
-	board[x][y] = INVALID;
-      }
-      for(int y=MAX_ROWS-2; y<MAX_ROWS; y++){
-	board[x][y] = INVALID;
-      }
-    }
-    
-    //Mark bottom left and right quads as invalid
-    for(int x=MAX_COLS-2; x<MAX_COLS; x++){
-      for(int y=MAX_ROWS-2; y<MAX_ROWS; y++){
-	board[x][y] = INVALID;
-      }
-      for(int y=0; y<2; y++){
-	board[x][y] = INVALID;
-      }
-    }
-    
-    //Mark center hole as open
-    board[3][3] = HOLE;
-    
-    ++time;
-  }
-    
+    }    
+  }  
+  
 /**************************************************************************
 **
 ** Name: getList()
@@ -167,36 +186,36 @@ public class Board implements GameConstants {
   
 /**************************************************************************
 **
-** Name: getJumpPosition()
+** Name: getJumpPoint()
 **
 ** Description: Finds the next possible directional movement on a HiQ board
 **
 ** Parameters
 **
 ** INPUT:
-**    pos * A Position instance containing a board coordinate
+**    pos * A Point instance containing a board coordinate
 **    dir * A String containing the direction to go
 **
 ** OUTPUT:
-**    A new Position instance
+**    A new Point instance
 **
 **************************************************************************/  
-  public Position getJumpPosition(Position pos, String dir){
-    int column = pos.getColumn();
-    int row = pos.getRow();    
-    Position p = new Position(0,0);
+  public Point getJumpPoint(Point pos, String dir){
+    int column = (int)pos.getX();
+    int row = (int)pos.getY();    
+    Point p = new Point(0,0);
     
     if(dir == "left"){
-      p.update(column,row-1);
+      p.setLocation(column,row-1);
     }
     else if(dir == "right"){
-      p.update(column,row+1);
+      p.setLocation(column,row+1);
     }
     else if(dir == "up"){
-      p.update(column-1,row);
+      p.setLocation(column-1,row);
     }
     else if(dir == "down"){
-      p.update(column+1,row);
+      p.setLocation(column+1,row);
     }
     
     return p;
@@ -211,16 +230,16 @@ public class Board implements GameConstants {
 ** Parameters
 **
 ** INPUT:
-**    pos * A Position instance containing a board coordinate
+**    pos * A Point instance containing a board coordinate
 **    dir * A String containing the direction to go
 **
 ** OUTPUT:
 **    None.
 **
 **************************************************************************/  
-  public void goBack(Position pos, String dir){
-    Position over = getJumpPosition(pos,dir);
-    Position land = getJumpPosition(over,dir);
+  public void goBack(Point pos, String dir){
+    Point over = getJumpPoint(pos,dir);
+    Point land = getJumpPoint(over,dir);
     String rev_dir;
     
     if(dir == "left" || dir == "right"){
@@ -246,23 +265,72 @@ public class Board implements GameConstants {
 ** Parameters
 **
 ** INPUT:
-**    pos * A Position instance containing a board coordinate
+**    pos * A Point instance containing a board coordinate
 **
 ** OUTPUT:
 **    boolean value
 **
 **************************************************************************/  
-  private boolean inBounds(Position pos){
-    int column = pos.getColumn();
-    int row = pos.getRow();
+  private boolean inBounds(Point pos){
+    int column = (int)pos.getX();
+    int row = (int)pos.getY();
     
-    if((column >= 0 && column < MAX_COLS) && (row >= 0 && row < MAX_ROWS)){
+    if((column >= 0 && column < MATRIXSIZE) && (row >= 0 && row < MATRIXSIZE)){
       return true;
     } else{
       return false;
     }
   }
  
+/**************************************************************************
+**
+** Name: initBoard()
+**
+** Description: Initializes board to default values
+**
+** Parameters
+**
+** INPUT:
+**    None
+**
+** OUTPUT:
+**    New Board instance with default values
+**
+**************************************************************************/  
+  public void initBoard(){
+    //Initialize entire board at 1
+    for(int i=0; i<MATRIXSIZE; i++){
+      for(int k=0; k<MATRIXSIZE; k++){
+	board[i][k] = PEG;
+      }
+    }
+    
+    //Mark top left and right quads as invalid
+    for(int x=0; x<2; x++){
+      for(int y=0; y<2; y++){
+	board[x][y] = INVALID;
+      }
+      for(int y=MATRIXSIZE-2; y<MATRIXSIZE; y++){
+	board[x][y] = INVALID;
+      }
+    }
+    
+    //Mark bottom left and right quads as invalid
+    for(int x=MATRIXSIZE-2; x<MATRIXSIZE; x++){
+      for(int y=MATRIXSIZE-2; y<MATRIXSIZE; y++){
+	board[x][y] = INVALID;
+      }
+      for(int y=0; y<2; y++){
+	board[x][y] = INVALID;
+      }
+    }
+    
+    //Mark center hole as open
+    board[3][3] = HOLE;
+    
+    ++time;
+  }  
+  
 /**************************************************************************
 **
 ** Name: isHole()
@@ -272,15 +340,15 @@ public class Board implements GameConstants {
 ** Parameters
 **
 ** INPUT:
-**    pos * A Position instance containing a board coordinate
+**    pos * A Point instance containing a board coordinate
 **
 ** OUTPUT:
 **    boolean value
 **
 **************************************************************************/  
-  public boolean isHole(Position pos){
-    int column = pos.getColumn();
-    int row = pos.getRow();
+  public boolean isHole(Point pos){
+    int column = (int)pos.getX();
+    int row = (int)pos.getY();
     
     return board[column][row] == HOLE ? true : false;
   } 
@@ -294,17 +362,17 @@ public class Board implements GameConstants {
 ** Parameters
 **
 ** INPUT:
-**    pos * A Position instance containing a board coordinate
+**    pos * A Point instance containing a board coordinate
 **    dir * A String containing the direction to go
 **
 ** OUTPUT:
 **    boolean value
 **
 **************************************************************************/ 
-  public boolean isJumpValid(Position pos, String dir){
+  public boolean isJumpValid(Point pos, String dir){
     boolean flag = false;
-    Position over = getJumpPosition(pos,dir);
-    Position land = getJumpPosition(over,dir);
+    Point over = getJumpPoint(pos,dir);
+    Point land = getJumpPoint(over,dir);
     
     if(isValid(pos) && inBounds(over) && inBounds(land)){
       if(isPeg(pos) && isPeg(over) && isHole(land)){
@@ -324,15 +392,15 @@ public class Board implements GameConstants {
 ** Parameters
 **
 ** INPUT:
-**    pos * A Position instance containing a board coordinate
+**    pos * A Point instance containing a board coordinate
 **
 ** OUTPUT:
 **    boolean value
 **
 **************************************************************************/  
-  public boolean isPeg(Position pos){
-    int column = pos.getColumn();
-    int row = pos.getRow();
+  public boolean isPeg(Point pos){
+    int column = (int)pos.getX();
+    int row = (int)pos.getY();
     
     return board[column][row] == PEG ? true : false;
   }
@@ -346,16 +414,16 @@ public class Board implements GameConstants {
 ** Parameters
 **
 ** INPUT:
-**    pos * A Position instance containing a board coordinate
+**    pos * A Point instance containing a board coordinate
 **
 ** OUTPUT:
 **    boolean value
 **
 **************************************************************************/  
-  public boolean isValid(Position pos){
+  public boolean isValid(Point pos){
     if(inBounds(pos)){
-      int column = pos.getColumn();
-      int row = pos.getRow();
+      int column = (int)pos.getX();
+      int row = (int)pos.getY();
       
       return board[column][row] != INVALID ? true : false;
     } else{
@@ -372,23 +440,52 @@ public class Board implements GameConstants {
 ** Parameters
 **
 ** INPUT:
-**    pos * A Position instance containing a board coordinate
+**    pos * A Point instance containing a board coordinate
 **    dir * A String containing the direction to go
 **
 ** OUTPUT:
 **    None.
 **
 **************************************************************************/ 
-  public void jump(Position pos, String dir){
-    Position over = getJumpPosition(pos,dir);
-    Position land = getJumpPosition(over,dir);
+  public void jump(Point pos, String dir){
+    Point over = getJumpPoint(pos,dir);
+    Point land = getJumpPoint(over,dir);
     
-    swapState(pos);  //Original Position
-    swapState(over); //Over Position
-    swapState(land); //Land Position
+    swapState(pos);  //Original Point
+    swapState(over); //Over Point
+    swapState(land); //Land Point
 
-    String string = "Peg " + pos.display() + " jumped " + dir + " over " + over.display() + " to hole " + land.display() + "\n";
+    String string = "Peg " + pos.toString() + " jumped " + dir + " over " + over.toString() + " to hole " + land.toString() + "\n";
     jumpList.add(string);
+  }
+  
+/**************************************************************************
+**
+** Name: pegCount()
+**
+** Description: Counts pegs on a board
+**
+** Parameters
+**
+** INPUT:
+**    None
+**
+** OUTPUT:
+**    int containing peg count
+**
+**************************************************************************/    
+  public int pegCount(){
+    int pegCount = 0;
+    
+    for(int j=0; j<MATRIXSIZE; j++){
+      for(int k=0; k<MATRIXSIZE; k++){
+	if(board[j][k] == PEG){
+	  pegCount++;
+	}
+      }
+    }    
+    
+    return pegCount;
   }
   
 /**************************************************************************
@@ -427,22 +524,28 @@ public class Board implements GameConstants {
 **    None
 **
 **************************************************************************/  
-  public void show(){
-    System.out.print("\n\n");
-    for(int i=0; i<MAX_COLS; i++){
-      for(int k=0; k<MAX_ROWS; k++){
-	System.out.print(board[i][k] + " ");
-      }
-      System.out.print("\n");
-    }
-    System.out.print("\n\n");
-    
-    printMoves();
-    System.out.println("\n\nTime: " + time + "\n\n");
-    
+  public void show(){    
     Graphics2D g = (Graphics2D) Window.gamePanel.getGraphics();
-    g.setColor(Color.WHITE);
-    g.drawString("will this work",100,100);
+    
+    for(int i=0; i<MATRIXSIZE; i++){
+      for(int k=0; k<MATRIXSIZE; k++){
+	if(board[i][k] != INVALID){
+	  
+	  int x = (BOARDMARGIN / 2) + (i*HOLESIZE) + (i*HOLEOFFSET) + PEGMARGIN;
+	  int y = (BOARDMARGIN / 2) + (k*HOLESIZE) + (k*HOLEOFFSET) + PEGMARGIN;
+	  
+	  //Draw Point border
+	  g.setColor(BORDERCOLOR);
+	  g.drawRect(x,y,HOLESIZE,HOLESIZE);
+	  
+	  //Select Point color
+	  g.setColor(board[i][k] == PEG ? PEGCOLOR : HOLECOLOR);
+	  
+	  //Paint Point
+	  g.fillRect(x+1,y+1,HOLESIZE-1,HOLESIZE-1);
+	}
+      }
+    }  
   }
  
 /**************************************************************************
@@ -454,15 +557,15 @@ public class Board implements GameConstants {
 ** Parameters
 **
 ** INPUT:
-**    pos * A Position instance containing a board coordinate
+**    pos * A Point instance containing a board coordinate
 **
 ** OUTPUT:
 **    None
 **
 **************************************************************************/  
-  public void swapState(Position pos){
-    int column = pos.getColumn();
-    int row = pos.getRow();
+  public void swapState(Point pos){
+    int column = (int)pos.getX();
+    int row = (int)pos.getY();
     
     board[column][row] = (board[column][row] == HOLE) ? PEG : HOLE;
   }
@@ -485,8 +588,8 @@ public class Board implements GameConstants {
   public String toString(){
     String string = "";
     
-    for(int j=0; j<MAX_COLS; j++){
-      for(int k=0; k<MAX_ROWS; k++){
+    for(int j=0; j<MATRIXSIZE; j++){
+      for(int k=0; k<MATRIXSIZE; k++){
 	string += board[j][k];
       }
     }

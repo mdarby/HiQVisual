@@ -20,12 +20,23 @@
 
 package HiQVisual;
 
-import javax.swing.JPanel;
+import java.awt.Color;
 
 public interface GameConstants {
   public static final char HOLE = 'O';
   public static final char PEG = '|';
   public static final char INVALID = ' ';
-  public static final int MAX_COLS = 7;
-  public static final int MAX_ROWS = 7;
+  public static final int PAUSE = 300;
+  
+  public static final Color PEGCOLOR = Color.RED;
+  public static final Color HOLECOLOR = Color.BLACK;
+  public static final Color BORDERCOLOR = Color.WHITE;  
+  
+  public static final int PANELSIZE = (int)Window.gamePanel.getSize().getHeight();
+  public static final int BOARDMARGIN = (PANELSIZE / (PANELSIZE / 10)) / 2;
+  
+  public static final int MATRIXSIZE = 7;
+  public static final int HOLESIZE = (int)(PANELSIZE * .12);
+  public static final int HOLEOFFSET = ((PANELSIZE - BOARDMARGIN) - (HOLESIZE * MATRIXSIZE)) / (MATRIXSIZE - 1);
+  public static final int PEGMARGIN = ((PANELSIZE - BOARDMARGIN) - ((HOLESIZE * MATRIXSIZE) + (HOLEOFFSET * (MATRIXSIZE - 1)))) / 2;
 }
